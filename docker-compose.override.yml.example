@@ -13,14 +13,34 @@ version: '3.4'
 
 # EXAMPLE: if you want to use the config file and the latest numbered release docker image the result will be:
 
-# services:
-#   api:
-#     volumes:
-#     - type: bind
-#       source: ./librechat.yaml
-#       target: /app/librechat.yaml
-#     image: ghcr.io/danny-avila/librechat:latest
+#services:
+   api:
+     volumes:
+     - type: bind
+       source: ./librechat.yaml
+       target: /app/librechat.yaml
+       image: ghcr.io/chinpeerapat/libredeepchat:beta 
 
+ 
+environment:
+      - MONGO_URI=${MONGO_URI}
+  mongodb:
+    command: mongod --auth
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: chinpeerapat
+      ME_CONFIG_BASICAUTH_PASSWORD: PeerapatChin1!
+      ME_CONFIG_MONGODB_URL: 'mongodb://chinpeerapat:WAnUfYSCpZ7hAvhB@mongodb:27017'
+      ME_CONFIG_MONGODB_ADMINUSERNAME: chinpeerapat
+      ME_CONFIG_MONGODB_ADMINPASSWORD: WAnUfYSCpZ7hAvhB
+    ports:
+      - '8081:8081'
+    depends_on:
+      - mongodb
+    restart: always
 # ---------------------------------------------------
 
 # services:
@@ -74,7 +94,7 @@ version: '3.4'
 #     image: mongo:4.4.18
 
 # # DISABLE THE MONGODB CONTAINER - YOU NEED TO SET AN ALTERNATIVE MONGODB URI IN THE .ENV FILE
-#   api:
+#  api:
 #     environment:
 #       - MONGO_URI=${MONGO_URI}
 #   mongodb:
