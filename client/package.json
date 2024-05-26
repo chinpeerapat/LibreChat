@@ -1,5 +1,5 @@
 {
-  "name": "@librechat/frontend",
+  "name": "@deepchat/frontend",
   "version": "0.7.2",
   "description": "",
   "type": "module",
@@ -18,15 +18,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/danny-avila/LibreChat.git"
+    "url": "git+https://github.com/chinpeerapat/LibreChat.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/danny-avila/LibreChat/issues"
+    "url": "https://github.com/chinpeerapat/LibreChat/issues"
   },
-  "homepage": "https://librechat.ai",
+  "homepage": "https://deepbun.com",
   "dependencies": {
     "@ariakit/react": "^0.4.5",
     "@dicebear/collection": "^7.0.4",
