@@ -11,7 +11,7 @@ jobs:
         include:
           - target: api-build
             file: Dockerfile.multi
-            image_name: deepchat-api
+            image_name: libredeepchat-api
           - target: node
             file: Dockerfile
             image_name: libredeepchat-compose
