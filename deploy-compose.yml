@@ -5,7 +5,7 @@ services:
     #   context: .
     #   dockerfile: Dockerfile.multi
     #   target: api-build
-    image: ghcr.io/chinpeerapat/librechat-dev-api:latest
+    image: ghcr.io/chinpeerapat/libredeepchat-dev-api:latest
     container_name: LibreChat-API
     ports:
       - 3080:3080
@@ -35,7 +35,7 @@ services:
       context: .
       dockerfile: Dockerfile.multi
       target: prod-stage
-    container_name: LibreChat-NGINX
+    container_name: LibredeepChat-NGINX
     ports:
       - 80:80
       - 443:443
