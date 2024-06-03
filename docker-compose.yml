@@ -5,13 +5,13 @@ version: "3.4"
 
 services:
   api:
-    container_name: LibreChat
+    container_name: DeepChat
     ports:
       - "${PORT}:${PORT}"
     depends_on:
       - mongodb
       - rag_api
-    image: ghcr.io/chinpeerapat/libredeepchat-dev:latest
+    image: docker.io/chpeerapat/libredeepchat-dev-api:latest
     restart: always
     user: "${UID}:${GID}"
     extra_hosts:
