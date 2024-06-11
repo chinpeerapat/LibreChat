@@ -9,7 +9,7 @@ WORKDIR /app/packages/data-provider
 COPY ./packages/data-provider ./
 RUN npm install; npm cache clean --force
 RUN npm run build
-RUN npm prune --production
+RUN npm prune --production   
 
 # React client build
 FROM base AS client-build

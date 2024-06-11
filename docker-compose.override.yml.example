@@ -19,8 +19,7 @@ version: '3.4'
      - type: bind
        source: ./librechat.yaml
        target: /app/librechat.yaml
-       image: ghcr.io/chinpeerapat/libredeepchat:beta 
-
+       image: ghcr.io/chinpeerapat/libredeepchat:latest
  
 environment:
       - MONGO_URI=${MONGO_URI}
