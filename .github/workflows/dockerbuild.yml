@@ -18,10 +18,10 @@ jobs:
         include:
           - target: api-build
             file: Dockerfile.multi
-            image_name: libredeepchat-dev-api
+            image_name: librechat-dev-api
           - target: node
             file: Dockerfile
-            image_name: libredeepchat-dev
+            image_name: librechat-dev
 
     steps:
       # Check out the repository
@@ -55,7 +55,6 @@ jobs:
       - name: Prepare environment
         run: |
           cp .env.example .env
-
       # Build and push Docker images for each target
       - name: Build and push Docker images
         uses: docker/build-push-action@v5
@@ -64,8 +63,8 @@ jobs:
           file: ${{ matrix.file }}
           push: true
           tags: |
-            ghcr.io/chinpeerapat/${{ matrix.image_name }}:${{ github.sha }}
-            ghcr.io/chinpeerapat/${{ matrix.image_name }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image_name }}:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image_name }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image_name }}:${{ github.sha }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image_name }}:latest
           platforms: linux/amd64,linux/arm64
