@@ -63,7 +63,7 @@ jobs:
           file: ${{ matrix.file }}
           push: true
           tags: |
-            ghcr.io/chinpeerapat/${{ matrix.image_name }}:${{ github.sha }}
+            # ghcr.io/chinpeerapat/${{ matrix.image_name }}:${{ github.sha }}
             ghcr.io/chinpeerapat/${{ matrix.image_name }}:latest
             # ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image_name }}:${{ github.sha }}
             # ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image_name }}:latest
