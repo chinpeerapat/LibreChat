@@ -16,3 +16,5 @@ jobs:
     - uses: actions/checkout@v4
     - name: Build the Docker image
       run: docker buildx build . --file Dockerfile --tag  ghcr.io/chinpeerapat/libredeepchat:latest$m
+           docker push ghcr.io/chinpeerapat/libredeepchat:latest$m
+
