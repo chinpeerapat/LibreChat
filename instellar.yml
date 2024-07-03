@@ -1,0 +1,51 @@
+dependencies:
+  build:
+    - nodejs-current
+    - npm
+  runtime:
+    - caddy
+    - bash
+    - curl
+    - s6
+    - jq
+    - ca-certificates
+    - librechat-openrc
+
+stack: alpine/3.19
+
+build:
+  command: |
+    npm install
+    npm run build
+  destinations:
+    - dist
+    - Caddyfile
+
+run:
+  name: librechat
+  services:
+    - binary: caddy
+      name: web
+      path: /usr/sbin
+      start:
+        call: run --config /var/lib/librechat/Caddyfile
+
+hook:
+  post-deinstall: |
+    rc-service librechat stop
+    rc-update del librechat
+  post-install: |
+    rc-update add librechat
+  post-upgrade: |
+    rc-service librechat start
+  pre-upgrade: |
+    rc-service librechat stop
+
+kits:
+  - description: static site server
+    main: true
+    name: web
+    ports:
+      - main: true
+        name: web
+        target: 3000
