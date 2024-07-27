@@ -1,5 +1,6 @@
 const OpenAIClient = require('./OpenAIClient');
 const { CallbackManager } = require('langchain/callbacks');
+const { CacheKeys, Time } = require('librechat-data-provider');
 const { BufferMemory, ChatMessageHistory } = require('langchain/memory');
 const { initializeCustomAgent, initializeFunctionsAgent } = require('./agents');
 const { addImages, buildErrorInput, buildPromptPrefix } = require('./output_parsers');
@@ -11,6 +12,7 @@ const { SelfReflectionTool } = require('./tools');
 const { isEnabled } = require('~/server/utils');
 const { extractBaseURL } = require('~/utils');
 const { loadTools } = require('./tools/util');
+const { getLogStores } = require('~/cache');
 const { logger } = require('~/config');
 
 class PluginsClient extends OpenAIClient {
@@ -220,6 +222,13 @@ class PluginsClient extends OpenAIClient {
     }
   }
 
+  /**
+   *
+   * @param {TMessage} responseMessage
+   * @param {Partial<TMessage>} saveOptions
+   * @param {string} user
+   * @returns
+   */
   async handleResponseMessage(responseMessage, saveOptions, user) {
     const { output, errorMessage, ...result } = this.result;
     logger.debug('[PluginsClient][handleResponseMessage] Output:', {
@@ -239,11 +248,31 @@ class PluginsClient extends OpenAIClient {
     }
 
     this.responsePromise = this.saveMessageToDatabase(responseMessage, saveOptions, user);
+    const messageCache = getLogStores(CacheKeys.MESSAGES);
+    messageCache.set(
+      responseMessage.messageId,
+      {
+        text: responseMessage.text,
+        complete: true,
+      },
+      Time.FIVE_MINUTES,
+    );
     delete responseMessage.tokenCount;
     return { ...responseMessage, ...result };
   }
 
   async sendMessage(message, opts = {}) {
+    /** @type {{ filteredTools: string[], includedTools: string[] }} */
+    const { filteredTools = [], includedTools = [] } = this.options.req.app.locals;
+
+    if (includedTools.length > 0) {
+      const tools = this.options.tools.filter((plugin) => includedTools.includes(plugin));
+      this.options.tools = tools;
+    } else {
+      const tools = this.options.tools.filter((plugin) => !filteredTools.includes(plugin));
+      this.options.tools = tools;
+    }
+
     // If a message is edited, no tools can be used.
     const completionMode = this.options.tools.length === 0 || opts.isEdited;
     if (completionMode) {
