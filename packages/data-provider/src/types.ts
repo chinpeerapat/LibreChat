@@ -185,7 +185,6 @@ export type TConversationTagResponse = TConversationTag;
 
 // type for tagging conversation
 export type TTagConversationRequest = {
-  conversationId: string;
   tags: string[];
 };
 export type TTagConversationResponse = string[];
@@ -255,6 +254,7 @@ export type TRegisterUser = {
   username: string;
   password: string;
   confirm_password?: string;
+  token?: string;
 };
 
 export type TLoginUser = {
