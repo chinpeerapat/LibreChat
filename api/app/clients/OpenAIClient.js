@@ -401,6 +401,7 @@ class OpenAIClient extends BaseClient {
 
   getSaveOptions() {
     return {
+      artifacts: this.options.artifacts,
       maxContextTokens: this.options.maxContextTokens,
       chatGptLabel: this.options.chatGptLabel,
       promptPrefix: this.options.promptPrefix,
@@ -463,6 +464,9 @@ class OpenAIClient extends BaseClient {
     let promptTokens;
 
     promptPrefix = (promptPrefix || this.options.promptPrefix || '').trim();
+    if (typeof this.options.artifactsPrompt === 'string' && this.options.artifactsPrompt) {
+      promptPrefix = `${promptPrefix ?? ''}\n${this.options.artifactsPrompt}`.trim();
+    }
 
     if (this.options.attachments) {
       const attachments = await this.options.attachments;
@@ -1182,7 +1186,15 @@ ${convo}
       }
 
       let UnexpectedRoleError = false;
+      /** @type {Promise<void>} */
+      let streamPromise;
+      /** @type {(value: void | PromiseLike<void>) => void} */
+      let streamResolve;
+
       if (modelOptions.stream) {
+        streamPromise = new Promise((resolve) => {
+          streamResolve = resolve;
+        });
         const stream = await openai.beta.chat.completions
           .stream({
             ...modelOptions,
@@ -1194,13 +1206,17 @@ ${convo}
           .on('error', (err) => {
             handleOpenAIErrors(err, errorCallback, 'stream');
           })
-          .on('finalChatCompletion', (finalChatCompletion) => {
+          .on('finalChatCompletion', async (finalChatCompletion) => {
             const finalMessage = finalChatCompletion?.choices?.[0]?.message;
-            if (finalMessage && finalMessage?.role !== 'assistant') {
+            if (!finalMessage) {
+              return;
+            }
+            await streamPromise;
+            if (finalMessage?.role !== 'assistant') {
               finalChatCompletion.choices[0].message.role = 'assistant';
             }
 
-            if (finalMessage && !finalMessage?.content?.trim()) {
+            if (typeof finalMessage.content !== 'string' || finalMessage.content.trim() === '') {
               finalChatCompletion.choices[0].message.content = intermediateReply;
             }
           })
@@ -1222,6 +1238,8 @@ ${convo}
 
           await sleep(streamRate);
         }
+
+        streamResolve();
 
         if (!UnexpectedRoleError) {
           chatCompletion = await stream.finalChatCompletion().catch((err) => {

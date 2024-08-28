@@ -32,11 +32,8 @@ services:
       - ./logs:/app/api/logs
 
   client:
-    build:
-      context: .
-      dockerfile: Dockerfile.multi
-      target: prod-stage
-    container_name: LibredeepChat-NGINX
+    image: nginx:1.27.0-alpine
+    container_name: LibreChat-NGINX
     ports:
       - 81:81
       - 444:444
