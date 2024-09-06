@@ -19,7 +19,7 @@ FROM base AS data-provider-build
 WORKDIR /app/packages/data-provider
 COPY packages/data-provider ./
 RUN npm run build
-RUN npm prune --production
+RUN npm prune --production   
 
 # Client build
 FROM base AS client-build
