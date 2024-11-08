@@ -1,6 +1,6 @@
 {
-  "name": "deepchat",
-  "version": "v0.7.5-rc2",
+  "name": "LibreChat",
+  "version": "v0.7.5",
   "description": "",
   "workspaces": [
     "api",
@@ -67,14 +67,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chinpeerapat/LibreChat.git"
+    "url": "git+https://github.com/danny-avila/LibreChat.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/chinpeerapat/LibreChat/issues"
+    "url": "https://github.com/danny-avila/LibreChat/issues"
   },
-  "homepage": "https://deepbun.com",
+  "homepage": "https://librechat.ai/",
   "devDependencies": {
     "@axe-core/playwright": "^4.9.1",
     "@playwright/test": "^1.38.1",
@@ -102,7 +102,8 @@
   "overrides": {
     "vite-plugin-pwa": {
       "rollup": "^4.22.4"
-    }
+    },
+    "mdast-util-gfm-autolink-literal": "2.0.0"
   },
   "nodemonConfig": {
     "ignore": [
