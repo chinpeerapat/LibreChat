@@ -1,4 +1,9 @@
-const { FileSources, EModelEndpoint, getConfigDefaults } = require('librechat-data-provider');
+const {
+  FileSources,
+  EModelEndpoint,
+  loadOCRConfig,
+  getConfigDefaults,
+} = require('librechat-data-provider');
 const { checkVariables, checkHealth, checkConfig, checkAzureVariables } = require('./start/checks');
 const { azureAssistantsDefaults, assistantsConfigSetup } = require('./start/assistants');
 const { initializeFirebase } = require('./Files/Firebase/initialize');
@@ -6,6 +11,7 @@ const loadCustomConfig = require('./Config/loadCustomConfig');
 const handleRateLimits = require('./Config/handleRateLimits');
 const { loadDefaultInterface } = require('./start/interface');
 const { azureConfigSetup } = require('./start/azureOpenAI');
+const { processModelSpecs } = require('./start/modelSpecs');
 const { loadAndFormatTools } = require('./ToolService');
 const { agentsConfigSetup } = require('./start/agents');
 const { initializeRoles } = require('~/models/Role');
@@ -24,6 +30,7 @@ const AppService = async (app) => {
   const config = (await loadCustomConfig()) ?? {};
   const configDefaults = getConfigDefaults();
 
+  const ocr = loadOCRConfig(config.ocr);
   const filteredTools = config.filteredTools;
   const includedTools = config.includedTools;
   const fileStrategy = config.fileStrategy ?? configDefaults.fileStrategy;
@@ -56,6 +63,7 @@ const AppService = async (app) => {
   const interfaceConfig = await loadDefaultInterface(config, configDefaults);
 
   const defaultLocals = {
+    ocr,
     paths,
     fileStrategy,
     socialLogins,
@@ -122,9 +130,9 @@ const AppService = async (app) => {
 
   app.locals = {
     ...defaultLocals,
-    modelSpecs: config.modelSpecs,
     fileConfig: config?.fileConfig,
     secureImageLinks: config?.secureImageLinks,
+    modelSpecs: processModelSpecs(endpoints, config.modelSpecs),
     ...endpointLocals,
   };
 };

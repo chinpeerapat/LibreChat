@@ -23,8 +23,9 @@ const initializeClient = async ({ req, res, endpointOption }) => {
   const agent = {
     id: EModelEndpoint.bedrock,
     name: endpointOption.name,
-    instructions: endpointOption.promptPrefix,
     provider: EModelEndpoint.bedrock,
+    endpoint: EModelEndpoint.bedrock,
+    instructions: endpointOption.promptPrefix,
     model: endpointOption.model_parameters.model,
     model_parameters: endpointOption.model_parameters,
   };
@@ -61,6 +62,7 @@ const initializeClient = async ({ req, res, endpointOption }) => {
     eventHandlers,
     collectedUsage,
     spec: endpointOption.spec,
+    iconURL: endpointOption.iconURL,
     endpoint: EModelEndpoint.bedrock,
     resendFiles: endpointOption.resendFiles,
     maxContextTokens:

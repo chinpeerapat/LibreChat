@@ -1,9 +1,9 @@
 import * as Ariakit from '@ariakit/react';
 import React, { useRef, useState, useMemo } from 'react';
-import { FileSearch, ImageUpIcon, TerminalSquareIcon } from 'lucide-react';
 import { EToolResources, EModelEndpoint } from 'librechat-data-provider';
-import { useGetEndpointsQuery } from 'librechat-data-provider/react-query';
+import { FileSearch, ImageUpIcon, TerminalSquareIcon, FileType2Icon } from 'lucide-react';
 import { FileUpload, TooltipAnchor, DropdownPopup } from '~/components/ui';
+import { useGetEndpointsQuery } from '~/data-provider';
 import { AttachmentIcon } from '~/components/svg';
 import { useLocalize } from '~/hooks';
 import { cn } from '~/utils';
@@ -11,15 +11,15 @@ import { cn } from '~/utils';
 interface AttachFileProps {
   isRTL: boolean;
   disabled?: boolean | null;
-  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  setToolResource?: React.Dispatch<React.SetStateAction<string | undefined>>;
+  handleFileChange: (event: React.ChangeEvent<HTMLInputElement>, toolResource?: string) => void;
 }
 
-const AttachFile = ({ isRTL, disabled, setToolResource, handleFileChange }: AttachFileProps) => {
+const AttachFile = ({ isRTL, disabled, handleFileChange }: AttachFileProps) => {
   const localize = useLocalize();
   const isUploadDisabled = disabled ?? false;
   const inputRef = useRef<HTMLInputElement>(null);
   const [isPopoverActive, setIsPopoverActive] = useState(false);
+  const [toolResource, setToolResource] = useState<EToolResources | undefined>();
   const { data: endpointsConfig } = useGetEndpointsQuery();
 
   const capabilities = useMemo(
@@ -42,18 +42,29 @@ const AttachFile = ({ isRTL, disabled, setToolResource, handleFileChange }: Atta
       {
         label: localize('com_ui_upload_image_input'),
         onClick: () => {
-          setToolResource?.(undefined);
+          setToolResource(undefined);
           handleUploadClick(true);
         },
         icon: <ImageUpIcon className="icon-md" />,
       },
     ];
 
+    if (capabilities.includes(EToolResources.ocr)) {
+      items.push({
+        label: localize('com_ui_upload_ocr_text'),
+        onClick: () => {
+          setToolResource(EToolResources.ocr);
+          handleUploadClick();
+        },
+        icon: <FileType2Icon className="icon-md" />,
+      });
+    }
+
     if (capabilities.includes(EToolResources.file_search)) {
       items.push({
         label: localize('com_ui_upload_file_search'),
         onClick: () => {
-          setToolResource?.(EToolResources.file_search);
+          setToolResource(EToolResources.file_search);
           handleUploadClick();
         },
         icon: <FileSearch className="icon-md" />,
@@ -64,7 +75,7 @@ const AttachFile = ({ isRTL, disabled, setToolResource, handleFileChange }: Atta
       items.push({
         label: localize('com_ui_upload_code_files'),
         onClick: () => {
-          setToolResource?.(EToolResources.execute_code);
+          setToolResource(EToolResources.execute_code);
           handleUploadClick();
         },
         icon: <TerminalSquareIcon className="icon-md" />,
@@ -98,7 +109,12 @@ const AttachFile = ({ isRTL, disabled, setToolResource, handleFileChange }: Atta
   );
 
   return (
-    <FileUpload ref={inputRef} handleFileChange={handleFileChange}>
+    <FileUpload
+      ref={inputRef}
+      handleFileChange={(e) => {
+        handleFileChange(e, toolResource);
+      }}
+    >
       <div className="relative select-none">
         <DropdownPopup
           menuId="attach-file-menu"

@@ -2,13 +2,14 @@
 # https://www.librechat.ai/docs/configuration/librechat_yaml
 
 # Configuration version (required)
-version: 1.1.5
+version: 1.2.1
 
 # Cache settings: Set to true to enable caching
 cache: true
 
 # Custom interface configuration
 interface:
+  customWelcome: "Welcome to LibreChat! Enjoy your experience."
   # Privacy policy settings
   privacyPolicy:
     externalUrl: 'https://librechat.ai/privacy-policy'
@@ -56,10 +57,20 @@ interface:
       If you have any questions about these Terms, please contact us at contact@librechat.ai.
 
       By using the Website, you acknowledge that you have read these Terms of Service and agree to be bound by them.
-    
+
+  endpointsMenu: true
+  modelSelect: true
+  parameters: true
+  sidePanel: true
+  presets: true
+  prompts: true
+  bookmarks: true
+  multiConvo: true
+  agents: true
+
 # Example Registration Object Structure (optional)
 registration:
-  socialLogins: ['github', 'google', 'discord', 'openid', 'facebook']
+  socialLogins: ['github', 'google', 'discord', 'openid', 'facebook', 'apple']
   # allowedDomains:
   # - "gmail.com"
 
@@ -71,7 +82,7 @@ registration:
 #       model: ''
 #       voices: ['']
 
-#  
+#
 #   stt:
 #     openai:
 #       url: ''
@@ -90,6 +101,41 @@ registration:
 #     userMax: 50
 #     userWindowInMinutes: 60  # Rate limit window for conversation imports per user
 
+# Example Actions Object Structure
+actions:
+  allowedDomains:
+    - "swapi.dev"
+    - "librechat.ai"
+    - "google.com"
+
+# Example MCP Servers Object Structure
+# mcpServers:
+#   everything:
+#     # type: sse # type can optionally be omitted
+#     url: http://localhost:3001/sse
+#     timeout: 60000  # 1 minute timeout for this server, this is the default timeout for MCP servers.
+#   puppeteer:
+#     type: stdio
+#     command: npx
+#     args:
+#       - -y
+#       - "@modelcontextprotocol/server-puppeteer"
+#     timeout: 300000  # 5 minutes timeout for this server
+#   filesystem:
+#     # type: stdio
+#     command: npx
+#     args:
+#       - -y
+#       - "@modelcontextprotocol/server-filesystem"
+#       - /home/user/LibreChat/
+#     iconPath: /home/user/LibreChat/client/public/assets/logo.svg
+#   mcp-obsidian:
+#     command: npx
+#     args:
+#       - -y
+#       - "mcp-obsidian"
+#       - /path/to/obsidian/vault
+
 # Definition of custom endpoints
 endpoints:
   # assistants:
@@ -105,6 +151,13 @@ endpoints:
   #   retrievalModels: ["gpt-4-turbo-preview"]
   #   # (optional) Assistant Capabilities available to all users. Omit the ones you wish to exclude. Defaults to list below.
   #   capabilities: ["code_interpreter", "retrieval", "actions", "tools", "image_vision"]
+  # agents:
+  #   (optional) Maximum recursion depth for agents, defaults to 25
+  #   recursionLimit: 50
+  #   (optional) Disable the builder interface for agents
+  #   disableBuilder: false
+  #   (optional) Agent Capabilities available to all users. Omit the ones you wish to exclude. Defaults to list below.
+  #   capabilities: ["execute_code", "file_search", "actions", "tools"]
   custom:
     # Groq Example
     - name: 'groq'
@@ -173,7 +226,6 @@ endpoints:
     - name: 'OpenRouter'
       # For `apiKey` and `baseURL`, you can use environment variables that you define.
       # recommended environment variables:
-      # Known issue: you should not use `OPENROUTER_API_KEY` as it will then override the `openAI` endpoint to use OpenRouter as well.
       apiKey: '${OPENROUTER_KEY}'
       baseURL: 'https://openrouter.ai/api/v1'
       models:
@@ -184,10 +236,10 @@ endpoints:
       # Recommended: Drop the stop parameter from the request as Openrouter models use a variety of stop tokens.
       dropParams: ['stop']
       modelDisplayLabel: 'OpenRouter'
-      
+
     # Portkey AI Example
     - name: "Portkey"
-      apiKey: "dummy"  
+      apiKey: "dummy"
       baseURL: 'https://api.portkey.ai/v1'
       headers:
           x-portkey-api-key: '${PORTKEY_API_KEY}'

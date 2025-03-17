@@ -75,8 +75,9 @@ const createAbortController = (req, res, getAbortData, getReqData) => {
 
     const abortKey = userMessage?.conversationId ?? req.user.id;
     const prevRequest = abortControllers.get(abortKey);
+    const { overrideUserMessageId } = req?.body ?? {};
 
-    if (prevRequest && prevRequest?.abortController) {
+    if (overrideUserMessageId != null && prevRequest && prevRequest?.abortController) {
       const data = prevRequest.abortController.getAbortData();
       getReqData({ userMessage: data?.userMessage });
       const addedAbortKey = `${abortKey}:${responseMessageId}`;
@@ -119,7 +120,7 @@ const createAbortController = (req, res, getAbortData, getReqData) => {
       { promptTokens, completionTokens },
     );
 
-    saveMessage(
+    await saveMessage(
       req,
       { ...responseMessage, user },
       { context: 'api/server/middleware/abortMiddleware.js' },

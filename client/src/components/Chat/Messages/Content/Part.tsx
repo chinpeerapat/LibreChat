@@ -10,6 +10,7 @@ import type { TMessageContentParts, TAttachment } from 'librechat-data-provider'
 import { ErrorMessage } from './MessageContent';
 import ExecuteCode from './Parts/ExecuteCode';
 import RetrievalCall from './RetrievalCall';
+import Reasoning from './Parts/Reasoning';
 import CodeAnalyze from './CodeAnalyze';
 import Container from './Container';
 import ToolCall from './ToolCall';
@@ -31,7 +32,12 @@ const Part = memo(({ part, isSubmitting, attachments, showCursor, isCreatedByUse
   }
 
   if (part.type === ContentTypes.ERROR) {
-    return <ErrorMessage text={part[ContentTypes.TEXT].value} className="my-2" />;
+    return (
+      <ErrorMessage
+        text={part[ContentTypes.ERROR] ?? part[ContentTypes.TEXT]?.value}
+        className="my-2"
+      />
+    );
   } else if (part.type === ContentTypes.TEXT) {
     const text = typeof part.text === 'string' ? part.text : part.text.value;
 
@@ -46,6 +52,12 @@ const Part = memo(({ part, isSubmitting, attachments, showCursor, isCreatedByUse
         <Text text={text} isCreatedByUser={isCreatedByUser} showCursor={showCursor} />
       </Container>
     );
+  } else if (part.type === ContentTypes.THINK) {
+    const reasoning = typeof part.think === 'string' ? part.think : part.think.value;
+    if (typeof reasoning !== 'string') {
+      return null;
+    }
+    return <Reasoning reasoning={reasoning} />;
   } else if (part.type === ContentTypes.TOOL_CALL) {
     const toolCall = part[ContentTypes.TOOL_CALL];
 
@@ -74,6 +86,8 @@ const Part = memo(({ part, isSubmitting, attachments, showCursor, isCreatedByUse
           initialProgress={toolCall.progress ?? 0.1}
           isSubmitting={isSubmitting}
           attachments={attachments}
+          auth={toolCall.auth}
+          expires_at={toolCall.expires_at}
         />
       );
     } else if (toolCall.type === ToolCallTypes.CODE_INTERPRETER) {

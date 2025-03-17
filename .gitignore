@@ -108,6 +108,4 @@ uploads/
 release/
 Librechat-vdeep.yaml
 target.txt
-target.txt
-target.txt
-target.txt
+!/client/src/@types/i18next.d.ts
